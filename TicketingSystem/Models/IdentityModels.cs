@@ -1,8 +1,13 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Web.Mvc;
 
 namespace TicketingSystem.Models
 {
@@ -16,10 +21,29 @@ namespace TicketingSystem.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+        public string Cellnumber { get; set; }
+        public string Department { get; set; }
+        public bool IsActive { get; set; }
+
+        public virtual string Manager { get; set; }
+        [ForeignKey("Manager")]
+        public virtual ApplicationUser ManagerUser { get; set; }
+
+        public virtual ICollection<Issue> Issues { get; set; }
+
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+
+        public DbSet<Issue> Issues { get; set; }
+        public DbSet<IssueReply> IssueReplies { get; set; }
+        public DbSet<IssueStatus> IssueStatuses { get; set; }
+        public DbSet<IssueManager> IssueManagers { get; set; }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
@@ -29,5 +53,7 @@ namespace TicketingSystem.Models
         {
             return new ApplicationDbContext();
         }
+
     }
+
 }

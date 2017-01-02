@@ -100,6 +100,13 @@ namespace TicketingSystem.Controllers
         }
 
         //
+        // GET: /Manage/EditProfile
+        public ActionResult EditProfile()
+        {
+            return View();
+        }
+
+        //
         // GET: /Manage/AddPhoneNumber
         public ActionResult AddPhoneNumber()
         {

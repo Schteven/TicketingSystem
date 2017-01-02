@@ -58,6 +58,23 @@ namespace TicketingSystem.Models
         public string ConfirmPassword { get; set; }
     }
 
+    public class EditProfileViewModel
+    {
+        [Display(Name = "Firstname")]
+        public string Firstname { get; set; }
+
+        [Display(Name = "Lastname")]
+        public string Lastname { get; set; }
+
+        [Phone]
+        [Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; }
+
+        [Phone]
+        [Display(Name = "Cellphone Number")]
+        public string CellNumber { get; set; }
+    }
+
     public class AddPhoneNumberViewModel
     {
         [Required]

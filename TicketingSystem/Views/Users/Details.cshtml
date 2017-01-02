@@ -1,0 +1,83 @@
+﻿@model TicketingSystem.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>ApplicationUser</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Firstname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Lastname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Lastname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Cellnumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Cellnumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Department)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Department)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ManagerUser.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ManagerUser.Firstname)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

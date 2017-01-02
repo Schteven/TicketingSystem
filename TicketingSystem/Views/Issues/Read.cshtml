@@ -1,0 +1,94 @@
+﻿@model TicketingSystem.Models.Issue
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+    <div class="row">
+        <div class="col-md-3 bs-callout-right">
+            <ul class="list-group">
+                <li class="list-group-item">Issuer: <strong>@Html.DisplayFor(model => model.User.Firstname)</strong></li>
+                <li class="list-group-item">Priority: <strong>@Html.DisplayFor(model => model.Priority)</strong></li>
+                <li class="list-group-item">Status: <strong>@Html.DisplayFor(model => model.IssueStatus)</strong></li>
+                <li class="list-group-item">Created on: <strong>@Html.DisplayFor(model => model.Created)</strong></li>
+            </ul>
+        </div>
+        <div class="col-md-7 bs-callout-left bs-callout-info">
+                <h4>@Html.DisplayFor(model => model.Subject)</h4>
+                <p>@Html.DisplayFor(model => model.Content)</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <h2>Response:</h2>
+        </div>
+        <div class="col-md-7 offset-md-7 bs-callout-right bs-callout-success-right">
+                <h4>@Html.DisplayFor(model => model.Solver.Firstname)</h4>
+                <p>Mauris risus lacus, ullamcorper non tellus eu, condimentum maximus orci. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed sit amet sagittis ante. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras consectetur in ipsum sit amet varius. Vivamus eu vestibulum sapien. Nulla est erat, suscipit vitae consectetur sed, condimentum a enim.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-7 bs-callout-left bs-callout-info-left">
+                <h4>@Html.DisplayFor(model => model.User.Firstname)</h4>
+                <p>Integer porttitor sem vel odio maximus, eu condimentum mauris consequat. Morbi ullamcorper ipsum quam, ut mattis massa viverra vel. Mauris commodo nunc eget commodo egestas.</p>
+        </div>
+    </div>
+    @{
+
+        string Role = (string)ViewBag.userRole.ToString();
+        string currentUser = (string)ViewBag.currentUser.ToString();
+        if (Model.User_Id == currentUser) { Role = "User"; }
+        if (Model.Solver_Id != currentUser) { Role = string.Empty;  }
+        switch (Role)
+        {
+
+            case "Administrator":
+            case "Manager":
+            case "Dispatcher":
+            case "Solver":
+
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-7 offset-md-7 bs-callout-right bs-callout-success-right">
+            <h4>@Html.DisplayFor(model => model.Solver.Firstname)</h4>
+            <div class="form-group">
+                <textarea class="form-control" id="exampleTextarea" rows="5" style="min-width: 100%"></textarea>
+            </div>
+            <div class="form-group">
+                <div class="pull-right">
+                    <input type="submit" value="Reply" class="btn btn-success" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+                break;
+            case "User":
+
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-7 bs-callout-left bs-callout-info-left">
+            <h4>@Html.DisplayFor(model => model.User.Firstname)</h4>
+            <div class="form-group">
+                <textarea class="form-control" id="exampleTextarea" rows="5" style="min-width: 100%"></textarea>
+            </div>
+            <div class="form-group">
+                <div class="pull-left">
+                    <input type="submit" value="Reply" class="btn btn-info" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+                break;
+            default:
+                break;
+        }
+    }
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.IssueId }) |
+    @Html.ActionLink("Cancel ticket", "Delete", new { id = Model.IssueId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
