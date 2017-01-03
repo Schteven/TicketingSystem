@@ -10,6 +10,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using TicketingSystem.Models;
+using TicketingSystem.Services;
 
 namespace TicketingSystem.Controllers
 {
@@ -17,6 +18,18 @@ namespace TicketingSystem.Controllers
     public class IssuesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
+        private IIssueService issueService;
+        private IUserService userService;
+
+        public IssuesController(IIssueService issueService)
+        {
+            this.issueService = issueService;
+        }
+        public IssuesController(IUserService userService)
+        {
+            this.userService = userService;
+        }
 
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
@@ -48,89 +61,31 @@ namespace TicketingSystem.Controllers
         // GET: Issues
         public async System.Threading.Tasks.Task<ActionResult> Index()
         {
-            var issues = db.Issues.Include(i => i.Solver).Include(i => i.User).Where(i => i.IssueId == 0);
-
-            ICollection<Issue> closedIssues = db.Issues
-                                                    .Include(i => i.Solver)
-                                                    .Include(i => i.User)
-                                                    .Where(i => i.IsDone == true)
-                                                    .OrderByDescending(i => i.Created)
-                                                    .ToList();
+            ICollection<Issue> issues = null;
+            ICollection<Issue> closedIssues = null;
             
-                string userRole = await GetUserRole();
+            string userRole = await GetUserRole();
             switch (userRole)
             {
                 case "Administrator":
                 case "Dispatcher":
-                    issues = db.Issues
-                                .Include(i => i.Solver)
-                                .Include(i => i.User)
-                                .Where(i => i.IsDone == false)
-                                .OrderByDescending(i => i.Priority)
-                                .ThenBy(i => i.Created);
-
-                    closedIssues = db.Issues
-                                        .Include(i => i.Solver)
-                                        .Include(i => i.User)
-                                        .Where(i => i.IsDone == true)
-                                        .OrderByDescending(i => i.Created)
-                                        .ToList();
+                    issues = issueService.AllToDispatcher();
+                    closedIssues = issueService.AllClosedIssuesToDispatcher();
                     break;
 
                 case "Manager":
-                    var usersOfManager = (from r in db.Users where r.Manager.Contains(currentUserId) select r).ToList();
-                    issues = db.Issues
-                                .Include(i => i.Solver)
-                                .Include(i => i.User)
-                                .Where(i => i.User.Manager.Contains(currentUserId))
-                                .Where(i => i.IsDone == false)
-                                .OrderByDescending(i => i.Priority)
-                                .ThenBy(i => i.Created);
-
-                    closedIssues = db.Issues
-                                        .Include(i => i.Solver)
-                                        .Include(i => i.User)
-                                        .Where(i => i.IsDone == true)
-                                        .OrderByDescending(i => i.Created)
-                                        .ToList();
+                    issues = issueService.AllToManager(currentUserId);
+                    closedIssues = issueService.AllClosedIssuesToManager(currentUserId);
                     break;
 
                 case "Solver":
-                    issues = db.Issues
-                                .Include(i => i.Solver)
-                                .Include(i => i.User)
-                                .Where(i => i.Solver_Id == currentUserId)
-                                .Where(i => i.IsDone == false)
-                                .OrderByDescending(i => i.Priority)
-                                .ThenBy(i => i.Created);
-
-                    closedIssues = db.Issues
-                                        .Include(i => i.Solver)
-                                        .Include(i => i.User)
-                                        .Where(i => i.Solver_Id == currentUserId)
-                                        .Where(i => i.IsDone == true)
-                                        .OrderByDescending(i => i.Created)
-                                        .ToList();
-
+                    issues = issueService.AllToSolver(currentUserId);
+                    closedIssues = issueService.AllClosedIssuesToSolver(currentUserId);
                     break;
 
                 case "User":
-                    issues = db.Issues
-                                .Include(i => i.Solver)
-                                .Include(i => i.User)
-                                .Where(i => i.User.Id.Contains(currentUserId))
-                                .Where(i => i.IsDone == false)
-                                .OrderByDescending(i => i.Priority)
-                                .ThenBy(i => i.Created);
-
-                    closedIssues = db.Issues
-                                        .Include(i => i.Solver)
-                                        .Include(i => i.User)
-                                        .Where(i => i.User.Id.Contains(currentUserId))
-                                        .Where(i => i.IsDone == true)
-                                        .OrderByDescending(i => i.Created)
-                                        .ToList();
-
+                    issues = issueService.AllToUser(currentUserId);
+                    closedIssues = issueService.AllClosedIssuesToUser(currentUserId);
                     break;
 
                 default:
@@ -138,7 +93,7 @@ namespace TicketingSystem.Controllers
                     
             }
             ViewBag.ClosedIssues = closedIssues;
-            return View(issues.ToList());
+            return View(issues);
         }
 
 
@@ -151,7 +106,7 @@ namespace TicketingSystem.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Issue issue = db.Issues.Find(id);
+            Issue issue = issueService.SingleIssue(id);
             
 
             if (issue == null)
@@ -159,7 +114,7 @@ namespace TicketingSystem.Controllers
                 return HttpNotFound();
             }
 
-            ICollection<IssueReply> replies = db.IssueReplies.Where(i => i.IssueId == issue.IssueId).ToList();
+            ICollection<IssueReply> replies = issueService.RepliesForIssue(id);
 
             string userRole = await GetUserRole();
             if (replies.Count() == 0)
@@ -215,8 +170,8 @@ namespace TicketingSystem.Controllers
         {
             string userRole = await GetUserRole();
 
-            Issue issue = db.Issues.Find(orIssue.IssueId);
-            ApplicationUser user = db.Users.Find(currentUserId);
+            Issue issue = issueService.SingleIssue(orIssue.IssueId);
+            ApplicationUser user = userService.GetUser(currentUserId);
 
             IssueReply issueReply = new IssueReply();
             issueReply.Content = Reply;
@@ -276,7 +231,7 @@ namespace TicketingSystem.Controllers
                 RedirectToAction("Read", new { id = issue.IssueId });
             }
 
-            ICollection<IssueReply> replies = db.IssueReplies.Where(i => i.IssueId == issue.IssueId).ToList();
+            ICollection<IssueReply> replies = issueService.RepliesForIssue(issue.IssueId);
             ViewBag.Replies = replies;
             ViewBag.currentUser = currentUserId;
             ViewBag.userRole = userRole;
@@ -324,7 +279,7 @@ namespace TicketingSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Issue issue = db.Issues.Find(id);
+            Issue issue = issueService.SingleIssue(id);
             if (issue == null)
             {
                 return HttpNotFound();
@@ -364,7 +319,7 @@ namespace TicketingSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Issue issue = db.Issues.Find(id);
+            Issue issue = issueService.SingleIssue(id);
             if (issue == null)
             {
                 return HttpNotFound();
@@ -377,7 +332,7 @@ namespace TicketingSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Issue issue = db.Issues.Find(id);
+            Issue issue = issueService.SingleIssue(id);
             db.Issues.Remove(issue);
             db.SaveChanges();
             return RedirectToAction("Index");

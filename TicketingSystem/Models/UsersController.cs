@@ -9,6 +9,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using TicketingSystem.Models;
+using TicketingSystem.Services;
 
 namespace TicketingSystem.Views
 {
@@ -16,6 +17,14 @@ namespace TicketingSystem.Views
     public class UsersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
+        private IUserService userService;
+
+        public UsersController(IUserService userService)
+        {
+            this.userService = userService;
+        }
+
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
         {
@@ -40,8 +49,7 @@ namespace TicketingSystem.Views
         // GET: Users
         public ActionResult Index()
         {
-            var applicationUsers = db.Users.Include(a => a.ManagerUser);
-            return View(applicationUsers.OrderBy(u => u.PhoneNumber).ThenBy(u => u.Department).ToList());
+            return View(userService.AllUsers());
         }
 
         // GET: Users/Details/5
@@ -51,7 +59,7 @@ namespace TicketingSystem.Views
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationUser applicationUser = db.Users.Find(id);
+            ApplicationUser applicationUser = userService.GetUser(id);
             if (applicationUser == null)
             {
                 return HttpNotFound();
@@ -112,7 +120,7 @@ namespace TicketingSystem.Views
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationUser applicationUser = db.Users.Find(id);
+            ApplicationUser applicationUser = userService.GetUser(id);
             if (applicationUser == null)
             {
                 return HttpNotFound();
@@ -153,7 +161,7 @@ namespace TicketingSystem.Views
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationUser applicationUser = db.Users.Find(id);
+            ApplicationUser applicationUser = userService.GetUser(id);
             if (applicationUser == null)
             {
                 return HttpNotFound();
@@ -166,7 +174,7 @@ namespace TicketingSystem.Views
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
         {
-            ApplicationUser applicationUser = db.Users.Find(id);
+            ApplicationUser applicationUser = userService.GetUser(id);
             db.Users.Remove(applicationUser);
             db.SaveChanges();
             return RedirectToAction("Index");
