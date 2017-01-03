@@ -23,10 +23,10 @@ namespace TicketingSystem.Models
         @new,
         assigned,
         open,
+        waiting,
         solved,
         closed,
         canceled,
-        waiting,
         denied
     }
 
@@ -51,6 +51,7 @@ namespace TicketingSystem.Models
         public DateTime Created { get; set; }
 
         public bool IsRead { get; set; }
+        public bool IsDone { get; set; }
 
         public virtual string User_Id { get; set; }
         [Display(Name = "Issuer")]

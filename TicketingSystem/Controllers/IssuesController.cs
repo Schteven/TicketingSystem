@@ -49,87 +49,239 @@ namespace TicketingSystem.Controllers
         public async System.Threading.Tasks.Task<ActionResult> Index()
         {
             var issues = db.Issues.Include(i => i.Solver).Include(i => i.User).Where(i => i.IssueId == 0);
-            string userRole = await GetUserRole();
+
+            ICollection<Issue> closedIssues = db.Issues
+                                                    .Include(i => i.Solver)
+                                                    .Include(i => i.User)
+                                                    .Where(i => i.IsDone == true)
+                                                    .OrderByDescending(i => i.Created)
+                                                    .ToList();
+            
+                string userRole = await GetUserRole();
             switch (userRole)
             {
                 case "Administrator":
-                    issues = db.Issues.Include(i => i.Solver).Include(i => i.User);
+                case "Dispatcher":
+                    issues = db.Issues
+                                .Include(i => i.Solver)
+                                .Include(i => i.User)
+                                .Where(i => i.IsDone == false)
+                                .OrderByDescending(i => i.Priority)
+                                .ThenBy(i => i.Created);
+
+                    closedIssues = db.Issues
+                                        .Include(i => i.Solver)
+                                        .Include(i => i.User)
+                                        .Where(i => i.IsDone == true)
+                                        .OrderByDescending(i => i.Created)
+                                        .ToList();
                     break;
 
                 case "Manager":
                     var usersOfManager = (from r in db.Users where r.Manager.Contains(currentUserId) select r).ToList();
-                    issues = db.Issues.Include(i => i.Solver).Include(i => i.User).Where(i => i.User.Manager.Contains(currentUserId));
-                    break;
+                    issues = db.Issues
+                                .Include(i => i.Solver)
+                                .Include(i => i.User)
+                                .Where(i => i.User.Manager.Contains(currentUserId))
+                                .Where(i => i.IsDone == false)
+                                .OrderByDescending(i => i.Priority)
+                                .ThenBy(i => i.Created);
 
-                case "Dispatcher":
-                    issues = db.Issues.Include(i => i.Solver).Include(i => i.User);
+                    closedIssues = db.Issues
+                                        .Include(i => i.Solver)
+                                        .Include(i => i.User)
+                                        .Where(i => i.IsDone == true)
+                                        .OrderByDescending(i => i.Created)
+                                        .ToList();
                     break;
 
                 case "Solver":
-                    issues = db.Issues.Include(i => i.Solver).Include(i => i.User).Where(i => i.Solver_Id == currentUserId);
+                    issues = db.Issues
+                                .Include(i => i.Solver)
+                                .Include(i => i.User)
+                                .Where(i => i.Solver_Id == currentUserId)
+                                .Where(i => i.IsDone == false)
+                                .OrderByDescending(i => i.Priority)
+                                .ThenBy(i => i.Created);
+
+                    closedIssues = db.Issues
+                                        .Include(i => i.Solver)
+                                        .Include(i => i.User)
+                                        .Where(i => i.Solver_Id == currentUserId)
+                                        .Where(i => i.IsDone == true)
+                                        .OrderByDescending(i => i.Created)
+                                        .ToList();
+
                     break;
 
                 case "User":
-                    issues = db.Issues.Include(i => i.Solver).Include(i => i.User).Where(i => i.User.Id.Contains(currentUserId));
+                    issues = db.Issues
+                                .Include(i => i.Solver)
+                                .Include(i => i.User)
+                                .Where(i => i.User.Id.Contains(currentUserId))
+                                .Where(i => i.IsDone == false)
+                                .OrderByDescending(i => i.Priority)
+                                .ThenBy(i => i.Created);
+
+                    closedIssues = db.Issues
+                                        .Include(i => i.Solver)
+                                        .Include(i => i.User)
+                                        .Where(i => i.User.Id.Contains(currentUserId))
+                                        .Where(i => i.IsDone == true)
+                                        .OrderByDescending(i => i.Created)
+                                        .ToList();
+
                     break;
 
                 default:
                     return RedirectToAction("Login", "Account");
                     
             }
+            ViewBag.ClosedIssues = closedIssues;
             return View(issues.ToList());
         }
 
 
-        // GET: Issues/Details/5
+        // GET: Issues/Read/5
         public async System.Threading.Tasks.Task<ActionResult> Read(int? id)
         {
+            
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Issue issue = db.Issues.Find(id);
+            
+
             if (issue == null)
             {
                 return HttpNotFound();
             }
+
+            ICollection<IssueReply> replies = db.IssueReplies.Where(i => i.IssueId == issue.IssueId).ToList();
+
             string userRole = await GetUserRole();
-            switch (userRole)
+            if (replies.Count() == 0)
             {
-                case "Administrator":
+                switch (userRole)
+                {
+                    case "Administrator":
 
-                    break;
+                        break;
 
-                case "Manager":
+                    case "Manager":
 
-                    break;
+                        break;
 
-                case "Dispatcher":
-                    issue.IsRead = true;
-                    issue.IssueStatus = Status.open;
-                    if (issue.Solver_Id != currentUserId)
-                    {
-                        issue.IsRead = false;
-                        issue.IssueStatus = Status.assigned;
-                    }
-                    db.Entry(issue).State = EntityState.Modified;
-                    db.SaveChanges();
-                    break;
+                    case "Dispatcher":
 
-                case "Solver":
-                    issue.IsRead = true;
-                    issue.IssueStatus = Status.open;
-                    db.Entry(issue).State = EntityState.Modified;
-                    db.SaveChanges();
-                    break;
+                        issue.IsRead = true;
+                        issue.IssueStatus = Status.open;
 
-                case "User":
-                    
-                    break;
+                        if (issue.Solver_Id != currentUserId)
+                        {
+                            issue.IsRead = false;
+                            issue.IssueStatus = Status.assigned;
+                        }
+
+                        db.Entry(issue).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                        break;
+
+                    case "Solver":
+                        issue.IsRead = true;
+                        issue.IssueStatus = Status.open;
+                        db.Entry(issue).State = EntityState.Modified;
+                        db.SaveChanges();
+                        break;
+
+                    case "User":
+
+                        break;
+                }
             }
+
+            ViewBag.Replies = replies;
             ViewBag.currentUser = currentUserId;
             ViewBag.userRole = userRole;
             return View(issue);
+        }
+        // POST: Issues/Read (reply)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async System.Threading.Tasks.Task<ActionResult> Read(Issue orIssue, string Reply, bool Solved)
+        {
+            string userRole = await GetUserRole();
+
+            Issue issue = db.Issues.Find(orIssue.IssueId);
+            ApplicationUser user = db.Users.Find(currentUserId);
+
+            IssueReply issueReply = new IssueReply();
+            issueReply.Content = Reply;
+            issueReply.Created = DateTime.Now;
+            issueReply.User_Id = currentUserId;
+            issueReply.IssueId = issue.IssueId;
+            issueReply.IsRead = false;
+            issueReply.Issue = issue;
+            issueReply.User = user;
+            db.IssueReplies.Add(issueReply);
+            db.SaveChanges();
+
+            switch (issue.IssueStatus)
+            {
+                case Status.canceled:
+                case Status.closed:
+                case Status.solved:
+                    if (issue.IssueStatus == Status.solved)
+                    {
+                        if (currentUserId == issue.User_Id)
+                        {
+                            issue.IssueStatus = Status.open;
+                        }
+                    }
+                    break;
+                case Status.assigned:
+                case Status.@new:
+                case Status.open:
+                case Status.waiting:
+                default:
+                    if (Solved)
+                    {
+                        if (currentUserId == issue.Solver_Id) { issue.IssueStatus = Status.solved; }
+                        else if (currentUserId == issue.User_Id) { issue.IssueStatus = Status.closed;  }
+                    }
+                    else
+                    {
+                        if (issue.Solver_Id == user.Id)
+                        {
+                            issue.IssueStatus = Status.waiting;
+                        }
+                        else
+                        {
+                            if (issue.IssueStatus == Status.waiting)
+                            {
+                                issue.IssueStatus = Status.open;
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            db.Entry(issue).State = EntityState.Modified;
+
+            if (db.SaveChanges() > 0)
+            {
+                RedirectToAction("Read", new { id = issue.IssueId });
+            }
+
+            ICollection<IssueReply> replies = db.IssueReplies.Where(i => i.IssueId == issue.IssueId).ToList();
+            ViewBag.Replies = replies;
+            ViewBag.currentUser = currentUserId;
+            ViewBag.userRole = userRole;
+            return View(issue);
+
         }
 
         // GET: Issues/Create

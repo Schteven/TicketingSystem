@@ -10,7 +10,7 @@ namespace TicketingSystem.Models
     public class IssueReply
     {
         [Key]
-        public string IssueReply_Id { get; set; }
+        public int IssueReply_Id { get; set; }
 
         public string Content { get; set; }
 

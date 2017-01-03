@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Web.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Resources;
 
 namespace TicketingSystem.Models
 {
@@ -21,13 +23,29 @@ namespace TicketingSystem.Models
             // Add custom user claims here
             return userIdentity;
         }
+        [Display(Name = "UserName", ResourceType = typeof(App_GlobalResources.globalUI))]
+        public override string UserName { get; set; }
 
+        [Display(Name = "Email", ResourceType = typeof(App_GlobalResources.globalUI))]
+        public override string Email { get; set; }
+
+        [Display(Name = "PhoneNumber", ResourceType = typeof(App_GlobalResources.globalUI))]
+        public override string PhoneNumber { get; set; }
+
+        [Display(Name="Firstname", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Firstname { get; set; }
-        public string Lastname { get; set; }
-        public string Cellnumber { get; set; }
-        public string Department { get; set; }
-        public bool IsActive { get; set; }
 
+        [Display(Name = "Lastname", ResourceType = typeof(App_GlobalResources.globalUI))]
+        public string Lastname { get; set; }
+
+        [Display(Name = "Cellnumber", ResourceType = typeof(App_GlobalResources.globalUI))]
+        public string Cellnumber { get; set; }
+
+        [Display(Name = "Department", ResourceType = typeof(App_GlobalResources.globalUI))]
+        public string Department { get; set; }
+
+        public bool IsActive { get; set; }
+        [Display(Name = "Manager", ResourceType = typeof(App_GlobalResources.globalUI))]
         public virtual string Manager { get; set; }
         [ForeignKey("Manager")]
         public virtual ApplicationUser ManagerUser { get; set; }

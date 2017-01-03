@@ -10,58 +10,73 @@
     @Html.ActionLink("Create New", "Create")
     @ViewBag.Test
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.User)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Subject)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Content)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Priority)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IssueStatus)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Solver)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.Firstname)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Subject)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Content)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Priority)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IssueStatus)
-        </td>
-        <td>
-            @if (item.Solver_Id == null) {
-                <text>not assigned</text>
-            }
-            else {
-                @Html.DisplayFor(modelItem => item.Solver.Firstname)
-            }
-        </td>
-        <td>
-            @Html.ActionLink("Read", "Read", new { id=item.IssueId })
-        </td>
-    </tr>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th width="10%">@Html.DisplayNameFor(model => model.User)</th>
+            <th width="30%">@Html.DisplayNameFor(model => model.Subject)</th>
+            <th width="50%">@Html.DisplayNameFor(model => model.Content)</th>
+            <th width="5%">@Html.DisplayNameFor(model => model.Priority)</th>
+            <th width="5%">@Html.DisplayNameFor(model => model.IssueStatus)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+    string htmlclass = string.Empty;
+    switch (item.Priority)
+    {
+        case TicketingSystem.Models.Level.low:
+            break;
+        case TicketingSystem.Models.Level.medium:
+            htmlclass = "class='bg-info'";
+            break;
+        case TicketingSystem.Models.Level.high:
+            htmlclass = "class='bg-warning'";
+            break;
+        case TicketingSystem.Models.Level.immediate:
+            htmlclass = "class='bg-danger'";
+            break;
+    }
+        <tr @Html.Raw(htmlclass);>
+            <th scope="row">@Html.DisplayFor(modelItem => item.User.Firstname)</th>
+            <td>@Html.DisplayFor(modelItem => item.Subject)</td>
+            <td>@Html.DisplayFor(modelItem => item.Content)</td>
+            <td>@Html.DisplayFor(modelItem => item.Priority)</td>
+            <td>@Html.DisplayFor(modelItem => item.IssueStatus)</td>
+            <td>@Html.ActionLink("Read", "Read", new { id = item.IssueId })</td>
+        </tr>
 }
-
+    </tbody>
+</table>
+<hr />
+<h3>Closed tickets:</h3>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th width="10%">@Html.DisplayNameFor(model => model.User)</th>
+            <th width="30%">@Html.DisplayNameFor(model => model.Subject)</th>
+            <th width="50%">@Html.DisplayNameFor(model => model.Content)</th>
+            <th width="5%">@Html.DisplayNameFor(model => model.Priority)</th>
+            <th width="5%">@Html.DisplayNameFor(model => model.IssueStatus)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            ICollection<TicketingSystem.Models.Issue> closeIssues = ViewBag.ClosedIssues;
+            foreach (TicketingSystem.Models.Issue i in closeIssues)
+            {
+                <tr>
+                    <th scope="row">@Html.DisplayFor(modelItem => i.User.Firstname)</th>
+                    <td>@Html.DisplayFor(modelItem => i.Subject)</td>
+                    <td>@Html.DisplayFor(modelItem => i.Content)</td>
+                    <td>@Html.DisplayFor(modelItem => i.Priority)</td>
+                    <td>@Html.DisplayFor(modelItem => i.IssueStatus)</td>
+                    <td>@Html.ActionLink("Read", "Read", new { id = i.IssueId })</td>
+                </tr>
+                }
+            }
+</tbody>
 </table>

@@ -5,6 +5,12 @@
 }
 
 <h2>Details</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.IssueId)
     <div class="row">
         <div class="col-md-3 bs-callout-right">
             <ul class="list-group">
@@ -19,74 +25,109 @@
                 <p>@Html.DisplayFor(model => model.Content)</p>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-3">
-            <h2>Response:</h2>
-        </div>
-        <div class="col-md-7 offset-md-7 bs-callout-right bs-callout-success-right">
-                <h4>@Html.DisplayFor(model => model.Solver.Firstname)</h4>
-                <p>Mauris risus lacus, ullamcorper non tellus eu, condimentum maximus orci. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed sit amet sagittis ante. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras consectetur in ipsum sit amet varius. Vivamus eu vestibulum sapien. Nulla est erat, suscipit vitae consectetur sed, condimentum a enim.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-7 bs-callout-left bs-callout-info-left">
-                <h4>@Html.DisplayFor(model => model.User.Firstname)</h4>
-                <p>Integer porttitor sem vel odio maximus, eu condimentum mauris consequat. Morbi ullamcorper ipsum quam, ut mattis massa viverra vel. Mauris commodo nunc eget commodo egestas.</p>
-        </div>
-    </div>
-    @{
 
-        string Role = (string)ViewBag.userRole.ToString();
-        string currentUser = (string)ViewBag.currentUser.ToString();
-        if (Model.User_Id == currentUser) { Role = "User"; }
-        if (Model.Solver_Id != currentUser) { Role = string.Empty;  }
-        switch (Role)
+    if (ViewBag.Replies != null)
+    {
+        ICollection<TicketingSystem.Models.IssueReply> replies = ViewBag.Replies;
+        foreach (TicketingSystem.Models.IssueReply ir in replies)
         {
+            if (Model.Solver_Id == ir.User_Id)
+            {
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-7 offset-md-7 bs-callout-right bs-callout-success-right">
+                            <h4>@Html.DisplayFor(model => model.Solver.Firstname)</h4>
+                            <p>@Html.Raw(ir.Content)</p>
+                            <h6><small>@Html.Raw(ir.Created)</small></h6>
+                        </div>
+                    </div>
+            }
+            else
+            {
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-7 bs-callout-left bs-callout-info-left">
+                            <h4>@Html.DisplayFor(model => model.User.Firstname)</h4>
+                            <p>@Html.Raw(ir.Content)</p>
+                            <h6><small>@Html.Raw(ir.Created)</small></h6>
+                        </div>
+                    </div>
 
-            case "Administrator":
-            case "Manager":
-            case "Dispatcher":
-            case "Solver":
-
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-7 offset-md-7 bs-callout-right bs-callout-success-right">
-            <h4>@Html.DisplayFor(model => model.Solver.Firstname)</h4>
-            <div class="form-group">
-                <textarea class="form-control" id="exampleTextarea" rows="5" style="min-width: 100%"></textarea>
-            </div>
-            <div class="form-group">
-                <div class="pull-right">
-                    <input type="submit" value="Reply" class="btn btn-success" />
-                </div>
-            </div>
-        </div>
-    </div>
-
-                break;
-            case "User":
-
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-7 bs-callout-left bs-callout-info-left">
-            <h4>@Html.DisplayFor(model => model.User.Firstname)</h4>
-            <div class="form-group">
-                <textarea class="form-control" id="exampleTextarea" rows="5" style="min-width: 100%"></textarea>
-            </div>
-            <div class="form-group">
-                <div class="pull-left">
-                    <input type="submit" value="Reply" class="btn btn-info" />
-                </div>
-            </div>
-        </div>
-    </div>
-
-                break;
-            default:
-                break;
+            }
         }
     }
+
+    string Role = (string)ViewBag.userRole.ToString();
+    string currentUser = (string)ViewBag.currentUser.ToString();
+    if (Model.User_Id == currentUser) { Role = "User"; }
+    //if (Model.Solver_Id != currentUser) { Role = string.Empty; }
+    switch (Model.IssueStatus)
+    {
+        case TicketingSystem.Models.Status.assigned:
+        case TicketingSystem.Models.Status.@new:
+        case TicketingSystem.Models.Status.open:
+        case TicketingSystem.Models.Status.solved:
+        case TicketingSystem.Models.Status.waiting:
+
+            switch (Role)
+            {
+
+                case "Administrator":
+                case "Manager":
+                case "Dispatcher":
+                case "Solver":
+
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-7 offset-md-7 bs-callout-right bs-callout-success-right">
+                            <h4>@Html.DisplayFor(model => model.Solver.Firstname)</h4>
+                            <div class="form-group">
+                                @Html.TextArea("Reply", new { @class = "form-control", @rows = "8", @style = "min-width: 100%" })
+                            </div>
+                            @Html.CheckBox("Solved") 
+                            I assume this solved your problem.
+                            <div class="form-group">
+                                <div class="pull-right">
+                                    <input type="submit" value="Reply" class="btn btn-success" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    break;
+                case "User":
+
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-7 bs-callout-left bs-callout-info-left">
+                            <h4>@Html.DisplayFor(model => model.User.Firstname)</h4>
+                            <div class="form-group">
+                                @Html.TextArea("Reply", new { @class = "form-control", @rows = "8", @style = "min-width: 100%" })
+                            </div>
+                            <p class="pull-right">This solved my problem.</p>
+                            @Html.CheckBox("Solved", new { @class = "pull-right" }) 
+                            <div class="form-group">
+                                <div class="pull-left">
+                                    <input type="submit" value="Reply" class="btn btn-info" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    break;
+                default:
+                    break;
+            }
+            break;
+
+        case TicketingSystem.Models.Status.canceled:
+        case TicketingSystem.Models.Status.closed:
+        case TicketingSystem.Models.Status.denied:
+        default:
+
+            break;
+    }
+}
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.IssueId }) |
     @Html.ActionLink("Cancel ticket", "Delete", new { id = Model.IssueId }) |
