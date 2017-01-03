@@ -30,20 +30,16 @@ namespace TicketingSystem.Models
         denied
     }
 
-    public class Issue
+    public class Issue : TEntity
     {
-
         public int IssueId { get; set; }
 
-        [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         public string Subject { get; set; }
 
-        [Required]
         [DataType(DataType.MultilineText)]
         public string Content { get; set; }
 
-        [Required]
         public Level? Priority { get; set; }
 
         public Status? IssueStatus { get; set; }
@@ -53,15 +49,11 @@ namespace TicketingSystem.Models
         public bool IsRead { get; set; }
         public bool IsDone { get; set; }
 
-        public virtual string User_Id { get; set; }
-        [Display(Name = "Issuer")]
-        [ForeignKey("User_Id")]
-        public virtual ApplicationUser User { get; set; }
-        
-        public virtual string Solver_Id { get; set; }
-        [Display(Name = "Solver")]
-        [ForeignKey("Solver_Id")]
-        public virtual ApplicationUser Solver { get; set; }
+        public int IssuerId { get; set; }
+        public virtual WebUser Issuer { get; set; }
+
+        public int SolverId { get; set; }
+        public virtual WebUser Solver { get; set; }
 
         public virtual ICollection<IssueReply> IssueReplies { get; set; }
 

@@ -42,7 +42,7 @@ namespace TicketingSystem.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.Manager = new SelectList(db.Users, "Id", "Firstname", applicationUser.Manager);
+            //ViewBag.Manager = new SelectList(db.Users, "Id", "Firstname", applicationUser.Manager);
             return View(applicationUser);
         }
 
@@ -59,7 +59,7 @@ namespace TicketingSystem.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Details", new { id = applicationUser.Id });
             }
-            ViewBag.Manager = new SelectList(db.Users, "Id", "Firstname", applicationUser.Manager);
+            //ViewBag.Manager = new SelectList(db.Users, "Id", "Firstname", applicationUser.Manager);
             return View(applicationUser);
         }
 

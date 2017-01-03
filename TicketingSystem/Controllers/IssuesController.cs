@@ -10,25 +10,25 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using TicketingSystem.Models;
+using TicketingSystem.Services;
+using System.Threading.Tasks;
 
 namespace TicketingSystem.Controllers
 {
     [Authorize]
     public class IssuesController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        //private ApplicationDbContext db = new ApplicationDbContext();
 
-        private ApplicationUserManager _userManager;
-        public ApplicationUserManager UserManager
+        private IIssueService issueService;
+        private IIssueReplyService issueReplyService;
+        private IUserService userService;
+
+        public IssuesController(IIssueService issueService, IIssueReplyService issueReplyService, IUserService userService)
         {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
+            this.issueService = issueService;
+            this.issueReplyService = issueReplyService;
+            this.userService = userService;
         }
 
         private string currentUserId
@@ -36,132 +36,59 @@ namespace TicketingSystem.Controllers
             get { return HttpContext.User.Identity.GetUserId(); }
             set { currentUserId = HttpContext.User.Identity.GetUserId(); }
         }
-        public async System.Threading.Tasks.Task<string> GetUserRole()
-        {
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
-            IdentityUserRole identityUserRole = UserManager.FindByName(HttpContext.User.Identity.GetUserName()).Roles.FirstOrDefault();
-            IdentityRole userRole = await roleManager.FindByIdAsync(identityUserRole.RoleId);
 
-            return userRole.Name;
-        }
 
         // GET: Issues
-        public async System.Threading.Tasks.Task<ActionResult> Index()
+        public ActionResult Index()
         {
-            var issues = db.Issues.Include(i => i.Solver).Include(i => i.User).Where(i => i.IssueId == 0);
+            ICollection<Issue> issues = null;
+            ICollection<Issue> closedIssues = null;
 
-            ICollection<Issue> closedIssues = db.Issues
-                                                    .Include(i => i.Solver)
-                                                    .Include(i => i.User)
-                                                    .Where(i => i.IsDone == true)
-                                                    .OrderByDescending(i => i.Created)
-                                                    .ToList();
-            
-                string userRole = await GetUserRole();
+            string userRole = userService.GetUserRole(HttpContext.User.Identity.GetUserName());
             switch (userRole)
             {
                 case "Administrator":
                 case "Dispatcher":
-                    issues = db.Issues
-                                .Include(i => i.Solver)
-                                .Include(i => i.User)
-                                .Where(i => i.IsDone == false)
-                                .OrderByDescending(i => i.Priority)
-                                .ThenBy(i => i.Created);
-
-                    closedIssues = db.Issues
-                                        .Include(i => i.Solver)
-                                        .Include(i => i.User)
-                                        .Where(i => i.IsDone == true)
-                                        .OrderByDescending(i => i.Created)
-                                        .ToList();
+                    issues = issueService.AllToDispatcher();
+                    closedIssues = issueService.AllClosedIssuesToDispatcher();
                     break;
 
                 case "Manager":
-                    var usersOfManager = (from r in db.Users where r.Manager.Contains(currentUserId) select r).ToList();
-                    issues = db.Issues
-                                .Include(i => i.Solver)
-                                .Include(i => i.User)
-                                .Where(i => i.User.Manager.Contains(currentUserId))
-                                .Where(i => i.IsDone == false)
-                                .OrderByDescending(i => i.Priority)
-                                .ThenBy(i => i.Created);
-
-                    closedIssues = db.Issues
-                                        .Include(i => i.Solver)
-                                        .Include(i => i.User)
-                                        .Where(i => i.IsDone == true)
-                                        .OrderByDescending(i => i.Created)
-                                        .ToList();
+                    issues = issueService.AllToManager(currentUserId);
+                    closedIssues = issueService.AllClosedIssuesToManager(currentUserId);
                     break;
 
                 case "Solver":
-                    issues = db.Issues
-                                .Include(i => i.Solver)
-                                .Include(i => i.User)
-                                .Where(i => i.Solver_Id == currentUserId)
-                                .Where(i => i.IsDone == false)
-                                .OrderByDescending(i => i.Priority)
-                                .ThenBy(i => i.Created);
-
-                    closedIssues = db.Issues
-                                        .Include(i => i.Solver)
-                                        .Include(i => i.User)
-                                        .Where(i => i.Solver_Id == currentUserId)
-                                        .Where(i => i.IsDone == true)
-                                        .OrderByDescending(i => i.Created)
-                                        .ToList();
-
+                    issues = issueService.AllToSolver(currentUserId);
+                    closedIssues = issueService.AllClosedIssuesToSolver(currentUserId);
                     break;
 
                 case "User":
-                    issues = db.Issues
-                                .Include(i => i.Solver)
-                                .Include(i => i.User)
-                                .Where(i => i.User.Id.Contains(currentUserId))
-                                .Where(i => i.IsDone == false)
-                                .OrderByDescending(i => i.Priority)
-                                .ThenBy(i => i.Created);
-
-                    closedIssues = db.Issues
-                                        .Include(i => i.Solver)
-                                        .Include(i => i.User)
-                                        .Where(i => i.User.Id.Contains(currentUserId))
-                                        .Where(i => i.IsDone == true)
-                                        .OrderByDescending(i => i.Created)
-                                        .ToList();
-
+                    issues = issueService.AllToUser(currentUserId);
+                    closedIssues = issueService.AllClosedIssuesToUser(currentUserId);
                     break;
 
                 default:
                     return RedirectToAction("Login", "Account");
-                    
+
             }
             ViewBag.ClosedIssues = closedIssues;
-            return View(issues.ToList());
+            return View(issues);
         }
 
-
         // GET: Issues/Read/5
-        public async System.Threading.Tasks.Task<ActionResult> Read(int? id)
+        public ActionResult Read(int? id)
         {
-            
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
 
-            Issue issue = db.Issues.Find(id);
-            
+            if (id == null) { return new HttpStatusCodeResult(HttpStatusCode.BadRequest); }
 
-            if (issue == null)
-            {
-                return HttpNotFound();
-            }
+            Issue issue = issueService.SingleIssue(id);
 
-            ICollection<IssueReply> replies = db.IssueReplies.Where(i => i.IssueId == issue.IssueId).ToList();
+            if (issue == null) { return HttpNotFound(); }
 
-            string userRole = await GetUserRole();
+            ICollection<IssueReply> replies = issueReplyService.RepliesForIssue(id);
+
+            string userRole = userService.GetUserRole(HttpContext.User.Identity.GetUserName());
             if (replies.Count() == 0)
             {
                 switch (userRole)
@@ -179,22 +106,22 @@ namespace TicketingSystem.Controllers
                         issue.IsRead = true;
                         issue.IssueStatus = Status.open;
 
-                        if (issue.Solver_Id != currentUserId)
+                        if (issue.Solver.ApplicationUser.Id != currentUserId)
                         {
                             issue.IsRead = false;
                             issue.IssueStatus = Status.assigned;
                         }
 
-                        db.Entry(issue).State = EntityState.Modified;
-                        db.SaveChanges();
+                        issueService.ModifyIssue(issue);
 
                         break;
 
                     case "Solver":
                         issue.IsRead = true;
                         issue.IssueStatus = Status.open;
-                        db.Entry(issue).State = EntityState.Modified;
-                        db.SaveChanges();
+
+                        issueService.ModifyIssue(issue);
+
                         break;
 
                     case "User":
@@ -211,23 +138,24 @@ namespace TicketingSystem.Controllers
         // POST: Issues/Read (reply)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async System.Threading.Tasks.Task<ActionResult> Read(Issue orIssue, string Reply, bool Solved)
+        public ActionResult Read(Issue orIssue, string Reply, bool Solved)
         {
-            string userRole = await GetUserRole();
+            
+            string userRole = userService.GetUserRole(HttpContext.User.Identity.GetUserName());
 
-            Issue issue = db.Issues.Find(orIssue.IssueId);
-            ApplicationUser user = db.Users.Find(currentUserId);
+            Issue issue = issueService.SingleIssue(orIssue.IssueId);
+            WebUser user = userService.GetUser(currentUserId);
 
             IssueReply issueReply = new IssueReply();
             issueReply.Content = Reply;
             issueReply.Created = DateTime.Now;
-            issueReply.User_Id = currentUserId;
-            issueReply.IssueId = issue.IssueId;
+            //issueReply.WebUserId = currentUserId;
+            issueReply.Issue = issue;
             issueReply.IsRead = false;
             issueReply.Issue = issue;
-            issueReply.User = user;
-            db.IssueReplies.Add(issueReply);
-            db.SaveChanges();
+            issueReply.Replier = user;
+
+            issueReplyService.AddIssueReply(issueReply);
 
             switch (issue.IssueStatus)
             {
@@ -236,7 +164,7 @@ namespace TicketingSystem.Controllers
                 case Status.solved:
                     if (issue.IssueStatus == Status.solved)
                     {
-                        if (currentUserId == issue.User_Id)
+                        if (currentUserId == issue.Issuer.ApplicationUser.Id)
                         {
                             issue.IssueStatus = Status.open;
                         }
@@ -249,12 +177,12 @@ namespace TicketingSystem.Controllers
                 default:
                     if (Solved)
                     {
-                        if (currentUserId == issue.Solver_Id) { issue.IssueStatus = Status.solved; }
-                        else if (currentUserId == issue.User_Id) { issue.IssueStatus = Status.closed;  }
+                        if (currentUserId == issue.Solver.ApplicationUser.Id) { issue.IssueStatus = Status.solved; }
+                        else if (currentUserId == issue.Issuer.ApplicationUser.Id) { issue.IssueStatus = Status.closed; }
                     }
                     else
                     {
-                        if (issue.Solver_Id == user.Id)
+                        if (issue.Solver == user)
                         {
                             issue.IssueStatus = Status.waiting;
                         }
@@ -269,17 +197,13 @@ namespace TicketingSystem.Controllers
                     break;
             }
 
-            db.Entry(issue).State = EntityState.Modified;
+            issueService.ModifyIssue(issue);
 
-            if (db.SaveChanges() > 0)
-            {
-                RedirectToAction("Read", new { id = issue.IssueId });
-            }
-
-            ICollection<IssueReply> replies = db.IssueReplies.Where(i => i.IssueId == issue.IssueId).ToList();
+            ICollection<IssueReply> replies = issueReplyService.RepliesForIssue(issue.IssueId);
             ViewBag.Replies = replies;
             ViewBag.currentUser = currentUserId;
             ViewBag.userRole = userRole;
+            
             return View(issue);
 
         }
@@ -287,8 +211,8 @@ namespace TicketingSystem.Controllers
         // GET: Issues/Create
         public ActionResult Create()
         {
-            ViewBag.Solver_Id = new SelectList(db.Users, "Id", "Firstname");
-            ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname");
+            //ViewBag.Solver_Id = new SelectList(db.Users, "Id", "Firstname");
+            //ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname");
             return View();
         }
 
@@ -301,19 +225,20 @@ namespace TicketingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                var role = (from r in db.Roles where r.Name.Contains("Dispatcher") select r).FirstOrDefault();
+                /*var role = (from r in db.Roles where r.Name.Contains("Dispatcher") select r).FirstOrDefault();
                 ApplicationUser dispatcher = db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(role.Id)).FirstOrDefault();
                 issue.Solver_Id = dispatcher.Id;
                 issue.Created = DateTime.Now;
                 issue.User_Id = User.Identity.GetUserId();
                 issue.IssueStatus = Status.@new;
-                db.Issues.Add(issue);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+
+                issueService.Create(issue);
+
+                return RedirectToAction("Index");*/
             }
 
-            ViewBag.Solver_Id = new SelectList(db.Users, "Id", "Firstname", issue.Solver_Id);
-            ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname", issue.User_Id);
+            //ViewBag.Solver_Id = new SelectList(db.Users, "Id", "Firstname", issue.Solver_Id);
+            //ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname", issue.User_Id);
             return View(issue);
         }
 
@@ -324,14 +249,14 @@ namespace TicketingSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Issue issue = db.Issues.Find(id);
+            Issue issue = issueService.SingleIssue(id);
             if (issue == null)
             {
                 return HttpNotFound();
             }
-            var role = (from r in db.Roles where r.Name.Contains("Solver") select r).FirstOrDefault();
-            ViewBag.Solver_Id = new SelectList(db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(role.Id)), "Id", "Firstname", issue.Solver_Id);
-            ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname", issue.User_Id);
+            //var role = (from r in db.Roles where r.Name.Contains("Solver") select r).FirstOrDefault();
+            //ViewBag.Solver_Id = new SelectList(db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(role.Id)), "Id", "Firstname", issue.Solver_Id);
+            //ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname", issue.User_Id);
             return View(issue);
         }
 
@@ -344,17 +269,47 @@ namespace TicketingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (issue.Solver_Id != null)
+                if (issue.Solver.WebUserId != 0)
                 {
                     issue.IssueStatus = Status.assigned;
                 }
-                db.Entry(issue).State = EntityState.Modified;
-                db.SaveChanges();
+
+                issueService.ModifyIssue(issue);
+
                 return RedirectToAction("Index");
             }
-            ViewBag.Solver_Id = new SelectList(db.Users, "Id", "Firstname", issue.Solver_Id);
-            ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname", issue.User_Id);
+            //ViewBag.Solver_Id = new SelectList(db.Users, "Id", "Firstname", issue.Solver_Id);
+            //ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname", issue.User_Id);
             return View(issue);
+        }
+        // POST: Issues/Cancel
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Cancel(Issue orIssue, string Reply)
+        {
+            Issue issue = issueService.SingleIssue(orIssue.IssueId);
+            WebUser user = userService.GetUser(currentUserId);
+            if (issue == null)
+            {
+                return HttpNotFound();
+            }
+            issue.IssueStatus = Status.canceled;
+            issue.IsDone = true;
+
+            issueService.ModifyIssue(issue);
+
+            IssueReply issueReply = new IssueReply();
+            issueReply.Content = Reply;
+            issueReply.Created = DateTime.Now;
+            //issueReply.WebUserId = currentUserId;
+            issueReply.Issue = issue;
+            issueReply.IsRead = false;
+            issueReply.Issue = issue;
+            issueReply.Replier = user;
+
+            issueReplyService.AddIssueReply(issueReply);
+
+            return RedirectToAction("Read", new { id = issue.IssueId });
         }
 
         // GET: Issues/Delete/5
@@ -364,7 +319,7 @@ namespace TicketingSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Issue issue = db.Issues.Find(id);
+            Issue issue = issueService.SingleIssue(id);
             if (issue == null)
             {
                 return HttpNotFound();
@@ -375,21 +330,20 @@ namespace TicketingSystem.Controllers
         // POST: Issues/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int? id)
         {
-            Issue issue = db.Issues.Find(id);
-            db.Issues.Remove(issue);
-            db.SaveChanges();
+            Issue issue = issueService.SingleIssue(id);
+            issueService.Delete(id);
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
+        /*protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
+        }*/
     }
 }

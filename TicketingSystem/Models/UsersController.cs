@@ -9,13 +9,20 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using TicketingSystem.Models;
+using TicketingSystem.Services;
 
 namespace TicketingSystem.Views
 {
     [Authorize(Roles="Administrator")]
     public class UsersController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private IUserService userService;
+
+        public UsersController(IUserService userService)
+        {
+            this.userService = userService;
+        }
+
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
         {
@@ -40,8 +47,7 @@ namespace TicketingSystem.Views
         // GET: Users
         public ActionResult Index()
         {
-            var applicationUsers = db.Users.Include(a => a.ManagerUser);
-            return View(applicationUsers.OrderBy(u => u.PhoneNumber).ThenBy(u => u.Department).ToList());
+            return View(userService.AllUsers());
         }
 
         // GET: Users/Details/5
@@ -51,7 +57,8 @@ namespace TicketingSystem.Views
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationUser applicationUser = db.Users.Find(id);
+            WebUser applicationUser = userService.GetUser(id);
+            //ApplicationUser applicationUser = db.Users.Find(id);
             if (applicationUser == null)
             {
                 return HttpNotFound();
@@ -62,9 +69,9 @@ namespace TicketingSystem.Views
         // GET: Users/Create
         public ActionResult Create()
         {
-            var roleManager = (from r in db.Roles where r.Name.Contains("Manager") select r).FirstOrDefault();
-            var roleAdministrator = (from r in db.Roles where r.Name.Contains("Administrator") select r).FirstOrDefault();
-            ViewBag.Manager = new SelectList(db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(roleManager.Id) || x.Roles.Select(y => y.RoleId).Contains(roleAdministrator.Id)).Select(s => new { Id = s.Id, Description = s.Firstname + " (" + s.Department + ")" }), "Id", "Description");
+            //var roleManager = (from r in db.Roles where r.Name.Contains("Manager") select r).FirstOrDefault();
+            //var roleAdministrator = (from r in db.Roles where r.Name.Contains("Administrator") select r).FirstOrDefault();
+            //ViewBag.Manager = new SelectList(db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(roleManager.Id) || x.Roles.Select(y => y.RoleId).Contains(roleAdministrator.Id)).Select(s => new { Id = s.Id, Description = s.Firstname + " (" + s.Department + ")" }), "Id", "Description");
             return View();
         }
 
@@ -73,21 +80,21 @@ namespace TicketingSystem.Views
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async System.Threading.Tasks.Task<ActionResult> Create([Bind(Include = "Firstname,Lastname,Cellnumber,Department,Manager,Email,PhoneNumber,UserName")] ApplicationUser applicationUser, string Manager)
+        public ActionResult Create([Bind(Include = "Firstname,Lastname,Cellnumber,Department,Manager,Email,PhoneNumber,UserName")] WebUser webUser, string Manager)
         {
-            if (ModelState.IsValid)
+            /*if (ModelState.IsValid)
             {
-                var departmentManager = (from r in db.Users where r.Id.Contains(Manager) select r.Department).FirstOrDefault();
-                var newUser = new ApplicationUser
+                //var departmentManager = (from r in db.Users where r.Id.Contains(Manager) select r.Department).FirstOrDefault();
+                var newUser = new WebUser
                 {
-                    Firstname = applicationUser.Firstname,
-                    Lastname = applicationUser.Lastname,
-                    Cellnumber = applicationUser.Cellnumber,
-                    PhoneNumber = applicationUser.PhoneNumber,
+                    FirstName = webUser.FirstName,
+                    LastName = webUser.LastName,
+                    CellNumber = webUser.CellNumber,
+                    PhoneNumber = webUser.PhoneNumber,
                     Manager = Manager,
                     Department = departmentManager,
-                    UserName = applicationUser.UserName,
-                    Email = applicationUser.Email,
+                    UserName = webUser.UserName,
+                    Email = webUser.Email,
                     IsActive = true
                 };
                 var result = await UserManager.CreateAsync(newUser, "demo");
@@ -102,7 +109,8 @@ namespace TicketingSystem.Views
             var roleManager = (from r in db.Roles where r.Name.Contains("Manager") select r).FirstOrDefault();
             var roleAdministrator = (from r in db.Roles where r.Name.Contains("Administrator") select r).FirstOrDefault();
             ViewBag.Manager = new SelectList(db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(roleManager.Id) || x.Roles.Select(y => y.RoleId).Contains(roleAdministrator.Id)).Select(s => new { Id = s.Id, Description = s.Firstname + " (" + s.Department + ")" }), "Id", "Description");
-            return View(applicationUser);
+            */
+            return View(webUser);
         }
 
         // GET: Users/Edit/5
@@ -112,15 +120,16 @@ namespace TicketingSystem.Views
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationUser applicationUser = db.Users.Find(id);
-            if (applicationUser == null)
+            WebUser WebUser = userService.GetUser(id);
+            //ApplicationUser applicationUser = db.Users.Find(id);
+            if (WebUser == null)
             {
                 return HttpNotFound();
             }
-            var roleManager = (from r in db.Roles where r.Name.Contains("Manager") select r).FirstOrDefault();
-            var roleAdministrator = (from r in db.Roles where r.Name.Contains("Administrator") select r).FirstOrDefault();
-            ViewBag.Manager = new SelectList(db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(roleManager.Id) || x.Roles.Select(y => y.RoleId).Contains(roleAdministrator.Id)).Select(s => new { Id = s.Id, Description = s.Firstname + " (" + s.Department + ")" }), "Id", "Description", applicationUser.Manager);
-            return View(applicationUser);
+            //var roleManager = (from r in db.Roles where r.Name.Contains("Manager") select r).FirstOrDefault();
+            //var roleAdministrator = (from r in db.Roles where r.Name.Contains("Administrator") select r).FirstOrDefault();
+            //ViewBag.Manager = new SelectList(db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(roleManager.Id) || x.Roles.Select(y => y.RoleId).Contains(roleAdministrator.Id)).Select(s => new { Id = s.Id, Description = s.Firstname + " (" + s.Department + ")" }), "Id", "Description", applicationUser.Manager);
+            return View(WebUser);
         }
 
         // POST: Users/Edit/5
@@ -128,9 +137,9 @@ namespace TicketingSystem.Views
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Firstname,Lastname,Cellnumber,Department,Manager,Email,PhoneNumber,UserName,PasswordHash,SecurityStamp,IsActive")] ApplicationUser applicationUser, string Manager)
+        public ActionResult Edit([Bind(Include = "Id,Firstname,Lastname,Cellnumber,Department,Manager,Email,PhoneNumber,UserName,PasswordHash,SecurityStamp,IsActive")] WebUser webUser, string Manager)
         {
-            if (ModelState.IsValid)
+            /*if (ModelState.IsValid)
             {
                 applicationUser.Manager = Manager;
                 var departmentManager = (from r in db.Users where r.Id.Contains(Manager) select r.Department).FirstOrDefault();
@@ -143,7 +152,8 @@ namespace TicketingSystem.Views
             var roleManager = (from r in db.Roles where r.Name.Contains("Manager") select r).FirstOrDefault();
             var roleAdministrator = (from r in db.Roles where r.Name.Contains("Administrator") select r).FirstOrDefault();
             ViewBag.Manager = new SelectList(db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(roleManager.Id) || x.Roles.Select(y => y.RoleId).Contains(roleAdministrator.Id)).Select(s => new { Id = s.Id, Description = s.Firstname + " (" + s.Department + ")" }), "Id", "Description", applicationUser.Manager);
-            return View(applicationUser);
+            */
+            return View(webUser);
         }
 
         // GET: Users/Delete/5
@@ -153,12 +163,13 @@ namespace TicketingSystem.Views
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationUser applicationUser = db.Users.Find(id);
-            if (applicationUser == null)
+            WebUser webUser = userService.GetUser(id);
+            //ApplicationUser applicationUser = db.Users.Find(id);
+            if (webUser == null)
             {
                 return HttpNotFound();
             }
-            return View(applicationUser);
+            return View(webUser);
         }
 
         // POST: Users/Delete/5
@@ -166,19 +177,9 @@ namespace TicketingSystem.Views
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
         {
-            ApplicationUser applicationUser = db.Users.Find(id);
-            db.Users.Remove(applicationUser);
-            db.SaveChanges();
+            WebUser webUser = userService.GetUser(id);
+            //ApplicationUser applicationUser = db.Users.Find(id);
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

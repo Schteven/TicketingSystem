@@ -7,23 +7,19 @@ using System.Web;
 
 namespace TicketingSystem.Models
 {
-    public class IssueReply
+    public class IssueReply : TEntity
     {
-        [Key]
-        public int IssueReply_Id { get; set; }
-
+        public int IssueReplyId { get; set; }
         public string Content { get; set; }
 
         public DateTime Created { get; set; }
 
-        public virtual string User_Id { get; set; }
-        [ForeignKey("User_Id")]
-        public virtual ApplicationUser User { get; set; }
-
         public bool IsRead { get; set; }
 
-        public virtual int IssueId { get; set; }
-        [ForeignKey("IssueId")]
+        public int ReplierId { get; set; }
+        public virtual WebUser Replier { get; set; }
+
+        public int IssueId { get; set; }
         public virtual Issue Issue { get; set; }
     }
 }

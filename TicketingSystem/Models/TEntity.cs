@@ -5,10 +5,8 @@ using System.Web;
 
 namespace TicketingSystem.Models
 {
-    public class IssueStatus
+    public class TEntity
     {
-        public int IssueStatusId { get; set; }
-        public string IssueStatusName { get; set; }
-
+        public int Id { get; set; }
     }
 }
