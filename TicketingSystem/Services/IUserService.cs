@@ -8,10 +8,8 @@ namespace TicketingSystem.Services
 {
     public interface IUserService
     {
-        List<WebUser> AllUsers();
+        List<ApplicationUser> AllUsers();
 
-        WebUser GetUser(string id);
-
-        string GetUserRole(string userName);
+        ApplicationUser GetUser(string id);
     }
 }

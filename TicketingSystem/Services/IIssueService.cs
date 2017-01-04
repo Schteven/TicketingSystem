@@ -6,7 +6,7 @@ using TicketingSystem.Models;
 
 namespace TicketingSystem.Services
 {
-    public interface IIssueService : IBaseService<Issue>
+    public interface IIssueService
     {
         List<Issue> AllToManager(string id);
 
@@ -24,8 +24,7 @@ namespace TicketingSystem.Services
 
         List<Issue> AllClosedIssuesToUser(string id);
 
+        List<IssueReply> RepliesForIssue(int? id);
         Issue SingleIssue(int? id);
-
-        bool ModifyIssue(Issue issue);
     }
 }
