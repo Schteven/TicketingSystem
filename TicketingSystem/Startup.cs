@@ -2,7 +2,6 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin;
 using Owin;
-using System.Linq;
 using TicketingSystem.Models;
 
 [assembly: OwinStartupAttribute(typeof(TicketingSystem.Startup))]
@@ -18,10 +17,10 @@ namespace TicketingSystem
 
         private void createRolesandUsers()
         {
-            ApplicationDbContext db = new ApplicationDbContext();
+            ApplicationDbContext context = new ApplicationDbContext();
 
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
-            var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
 
             if (!roleManager.RoleExists("Administrator"))
             {
@@ -31,14 +30,18 @@ namespace TicketingSystem
                 roleManager.Create(role);
 
                 var user = new ApplicationUser();
-                    user.UserName   = "admin";
-                    user.Email      = "admin@company.net";
-                string userPWD = "demo";
+                user.UserName = "admin@admin.net";
+                user.Email = "admin@admin.net";
+
+                string userPWD = "admin&1";
 
                 var chkUser = UserManager.Create(user, userPWD);
-                var result1 = UserManager.AddToRole(user.Id, "Administrator");
 
+                if (chkUser.Succeeded)
+                {
+                    var result1 = UserManager.AddToRole(user.Id, "Administrator");
 
+                }
             }
 
             if (!roleManager.RoleExists("Manager"))
