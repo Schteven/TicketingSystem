@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Web.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Resources;
+using TicketingSystem.Services;
 
 namespace TicketingSystem.Models
 {
@@ -54,13 +55,11 @@ namespace TicketingSystem.Models
 
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
     {
 
         public DbSet<Issue> Issues { get; set; }
         public DbSet<IssueReply> IssueReplies { get; set; }
-        public DbSet<IssueStatus> IssueStatuses { get; set; }
-        public DbSet<IssueManager> IssueManagers { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

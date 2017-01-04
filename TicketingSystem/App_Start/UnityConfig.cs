@@ -21,7 +21,11 @@ namespace TicketingSystem
             // e.g. container.RegisterType<ITestService, TestService>();
 
             container.RegisterType<IIssueService, IssueService>();
+            container.RegisterType<IIssueReplyService, IssueReplyService>();
             container.RegisterType<IUserService, UserService>();
+            container.RegisterType<IApplicationDbContext, ApplicationDbContext>(new PerThreadLifetimeManager());
+            container.RegisterType(typeof(IBaseService<>), typeof(BaseService<>));
+
             container.RegisterType<IUserStore<ApplicationUser>, UserStore<ApplicationUser>>();
             container.RegisterType<AccountController>(new InjectionConstructor());
             container.RegisterType<ManageController>(new InjectionConstructor());

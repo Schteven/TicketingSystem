@@ -31,18 +31,7 @@
         ICollection<TicketingSystem.Models.IssueReply> replies = ViewBag.Replies;
         foreach (TicketingSystem.Models.IssueReply ir in replies)
         {
-            if (Model.Solver_Id == ir.User_Id)
-            {
-                    <div class="row">
-                        <div class="col-md-3"></div>
-                        <div class="col-md-7 offset-md-7 bs-callout-right bs-callout-success-right">
-                            <h4>@Html.DisplayFor(model => model.Solver.Firstname)</h4>
-                            <p>@Html.Raw(ir.Content)</p>
-                            <h6><small>@Html.Raw(ir.Created)</small></h6>
-                        </div>
-                    </div>
-            }
-            else
+            if (Model.User_Id == ir.User_Id)
             {
                     <div class="row">
                         <div class="col-md-3"></div>
@@ -53,6 +42,17 @@
                         </div>
                     </div>
 
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-7 offset-md-7 bs-callout-right bs-callout-success-right">
+                        <h4>@Html.DisplayFor(model => ir.User.Firstname)</h4>
+                        <p>@Html.Raw(ir.Content)</p>
+                        <h6><small>@Html.Raw(ir.Created)</small></h6>
+                    </div>
+                </div>
             }
         }
     }
@@ -129,7 +129,36 @@
     }
 }
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.IssueId }) |
-    @Html.ActionLink("Cancel ticket", "Delete", new { id = Model.IssueId }) |
-    @Html.ActionLink("Back to List", "Index")
+<p>
+    <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Edit", "Issues", new { id = Model.IssueId })'">Edit</button>
+    <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Index", "Issues", new { id = Model.IssueId })'">Go back</button>
+    <button type="button" class="btn btn-danger pull-right" data-toggle="modal" data-target="#cancelTicket">Cancel this ticket</button>
 </p>
+@using (Html.BeginForm("Cancel", "Issues"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.IssueId)
+    <div class="modal fade" id="cancelTicket" tabindex="-1" role="dialog" aria-labelledby="cancelation" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="cancelation">Cancel this ticket</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel this ticket? If yes, why?</p>
+                    <div class="form-group">
+                        @Html.TextArea("Reply", new { @class = "form-control", @rows = "8", @style = "min-width: 100%" })
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <input type="submit" value="Cancel" class="btn btn-danger" />
+                </div>
+            </div>
+        </div>
+    </div>
+}

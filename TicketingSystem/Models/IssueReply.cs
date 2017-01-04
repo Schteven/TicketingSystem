@@ -7,7 +7,7 @@ using System.Web;
 
 namespace TicketingSystem.Models
 {
-    public class IssueReply
+    public class IssueReply : TEntity
     {
         [Key]
         public int IssueReply_Id { get; set; }

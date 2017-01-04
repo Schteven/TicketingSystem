@@ -30,9 +30,9 @@ namespace TicketingSystem.Models
         denied
     }
 
-    public class Issue
+    public class Issue : TEntity
     {
-
+        [Key]
         public int IssueId { get; set; }
 
         [Required]

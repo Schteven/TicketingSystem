@@ -7,26 +7,36 @@ using TicketingSystem.Services;
 
 namespace TicketingSystem.Models
 {
-    public class UserService : IUserService
+    public class UserService : BaseService<User>, IUserService
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
-        public UserService()
+        public UserService(IApplicationDbContext db) : base(db)
         {
-            db = new ApplicationDbContext();
         }
+
         public List<ApplicationUser> AllUsers()
         {
-            var users = db.Users.Include(a => a.ManagerUser).OrderBy(u => u.PhoneNumber).ThenBy(u => u.Department).ToList();
-            return users;
+            var users = base.GetAll("ApplicationUser");
+            return users.ToList();
+        }
+
+        public IQueryable<ApplicationUser> Solvers()
+        {
+            var solvers = base.GetSolvers();
+            return solvers;
         }
 
         public ApplicationUser GetUser(string id)
         {
 
-            ApplicationUser user = db.Users.Find(id);
+            ApplicationUser user = base.Find("ApplicationUser", id);
             return user;
 
+        }
+
+        public new async System.Threading.Tasks.Task<string> GetUserRole()
+        {
+            string userRole = await base.GetUserRole();
+            return userRole;
         }
     }
 }
