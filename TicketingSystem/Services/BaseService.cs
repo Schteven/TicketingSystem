@@ -15,7 +15,7 @@ namespace TicketingSystem.Models
     public class BaseService<T> : IBaseService<T> where T : TEntity
     {
 
-        public ApplicationDbContext db;
+        ApplicationDbContext db;
 
         public BaseService(IApplicationDbContext db)
         {
@@ -90,7 +90,8 @@ namespace TicketingSystem.Models
 
         public IQueryable<ApplicationUser> GetSolvers()
         {
-            return db.Users.Where(u => u.Department.Contains("IT"));
+            var solvers = db.Users.Where(u => u.Department.Contains("IT")).Where(m => m.ManagerUser.Department != "CEO");
+            return solvers;
         }
 
         public ApplicationUser Find(string type, string id)
@@ -117,11 +118,25 @@ namespace TicketingSystem.Models
             return userRole.Name;
         }
 
+        public IQueryable<ApplicationUser> GetUsersByRole(string roleName)
+        {
+            var role = (from r in db.Roles where r.Name.Contains(roleName) select r).FirstOrDefault();
+            return db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(role.Id));
+        }
 
         // Global savechanges function
         public void SaveChanges()
         {
             db.SaveChanges();
+        }
+
+        public void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            Dispose(disposing);
         }
 
     }

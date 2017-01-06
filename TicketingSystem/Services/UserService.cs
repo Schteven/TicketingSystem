@@ -38,5 +38,11 @@ namespace TicketingSystem.Models
             string userRole = await base.GetUserRole();
             return userRole;
         }
+
+        public IQueryable<ApplicationUser> GetUserByRole(string roleName)
+        {
+            var applicationUsers = base.GetUsersByRole(roleName);
+            return applicationUsers;
+        }
     }
 }

@@ -24,6 +24,11 @@ namespace TicketingSystem.Services
         ApplicationUser Find(string type, string id);
         void Delete(string id);
         System.Threading.Tasks.Task<string> GetUserRole();
+        IQueryable<ApplicationUser> GetUsersByRole(string roleName);
+
+        // Shared
         void SaveChanges();
+
+        void Dispose(bool disposing);
     }
 }

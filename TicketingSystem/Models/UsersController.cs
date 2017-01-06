@@ -20,6 +20,10 @@ namespace TicketingSystem.Views
 
         private IUserService userService;
 
+        public UsersController() : this(new UserService(new ApplicationDbContext()))
+        {
+
+        }
         public UsersController(IUserService userService)
         {
             this.userService = userService;

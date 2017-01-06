@@ -209,16 +209,16 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\BaseService.cs" />
+    <Compile Include="Services\BaseService.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Issue.cs" />
     <Compile Include="Models\IssueReply.cs" />
-    <Compile Include="Models\IssueReplyService.cs" />
-    <Compile Include="Models\IssueService.cs" />
+    <Compile Include="Services\IssueReplyService.cs" />
+    <Compile Include="Services\IssueService.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\TEntity.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="Models\UserService.cs" />
+    <Compile Include="Services\UserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IApplicationDbContext.cs" />
     <Compile Include="Services\IBaseService.cs" />

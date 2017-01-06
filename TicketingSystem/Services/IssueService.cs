@@ -70,6 +70,8 @@ namespace TicketingSystem.Models
         public bool ModifyIssue(Issue issue)
         {
             base.Edit(issue);
+            //base.db.Entry(issue).State = EntityState.Modified;
+            //base.db.SaveChanges();
             return true;
         }
 

@@ -11,7 +11,7 @@ namespace TicketingSystem.Services
         List<ApplicationUser> AllUsers();
         IQueryable<ApplicationUser> GetSolvers();
         ApplicationUser GetUser(string id);
-
         System.Threading.Tasks.Task<string> GetUserRole();
+        IQueryable<ApplicationUser> GetUsersByRole(string roleName);
     }
 }

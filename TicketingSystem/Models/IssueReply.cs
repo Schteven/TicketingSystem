@@ -22,8 +22,11 @@ namespace TicketingSystem.Models
 
         public bool IsRead { get; set; }
 
+        public bool IsSolved { get; set; }
+
         public virtual int IssueId { get; set; }
         [ForeignKey("IssueId")]
         public virtual Issue Issue { get; set; }
+
     }
 }

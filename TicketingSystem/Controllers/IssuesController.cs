@@ -23,12 +23,18 @@ namespace TicketingSystem.Controllers
         private IUserService userService;
         private IIssueReplyService issueReplyService;
 
+        public IssuesController() : this(new IssueService(new ApplicationDbContext()), new UserService(new ApplicationDbContext()), new IssueReplyService(new ApplicationDbContext()))
+        {
+
+        }
+
         public IssuesController(IIssueService issueService, IUserService userService, IIssueReplyService issueReplyService)
         {
             this.issueService = issueService;
             this.userService = userService;
             this.issueReplyService = issueReplyService;
         }
+
         private string currentUserId
         {
             get { return HttpContext.User.Identity.GetUserId(); }
@@ -135,7 +141,7 @@ namespace TicketingSystem.Controllers
                         break;
                 }
             }
-
+            ViewBag.Solver_Id = new SelectList(userService.GetSolvers(), "Id", "Firstname", issue.Solver_Id);
             ViewBag.Replies = replies;
             ViewBag.currentUser = currentUserId;
             ViewBag.userRole = userRole;
@@ -159,6 +165,7 @@ namespace TicketingSystem.Controllers
             issueReply.IsRead = false;
             issueReply.Issue = issue;
             issueReply.User = user;
+            issueReply.IsSolved = Solved;
 
             issueReplyService.AddIssueReply(issueReply);
 
@@ -206,7 +213,7 @@ namespace TicketingSystem.Controllers
             {
                 return RedirectToAction("Read", new { id = issue.IssueId });
             }
-
+            ViewBag.Solver_Id = new SelectList(userService.GetSolvers(), "Id", "Firstname", issue.Solver_Id);
             ICollection<IssueReply> replies = issueReplyService.RepliesForIssue(issue.IssueId);
             ViewBag.Replies = replies;
             ViewBag.currentUser = currentUserId;
@@ -218,8 +225,6 @@ namespace TicketingSystem.Controllers
         // GET: Issues/Create
         public ActionResult Create()
         {
-            ViewBag.Solver_Id = new SelectList(db.Users, "Id", "Firstname");
-            ViewBag.User_Id = new SelectList(db.Users, "Id", "Firstname");
             return View();
         }
 
@@ -232,8 +237,7 @@ namespace TicketingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                var role = (from r in db.Roles where r.Name.Contains("Dispatcher") select r).FirstOrDefault();
-                ApplicationUser dispatcher = db.Users.Where(x => x.Roles.Select(y => y.RoleId).Contains(role.Id)).FirstOrDefault();
+                ApplicationUser dispatcher = userService.GetUsersByRole("Dispatcher").FirstOrDefault();
                 issue.Solver_Id = dispatcher.Id;
                 issue.Created = DateTime.Now;
                 issue.User_Id = User.Identity.GetUserId();
@@ -246,7 +250,17 @@ namespace TicketingSystem.Controllers
 
             return View(issue);
         }
+        // GET: Issues/EditSolver
+        public ActionResult EditSolver(int? id, string solver)
+        {
+            Issue issue = db.Issues.Find(id);
+            issue.Solver_Id = solver;
 
+            db.Entry(issue).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("Read/" + id);
+        }
         // GET: Issues/Edit/5
         public ActionResult Edit(int? id)
         {
@@ -272,13 +286,14 @@ namespace TicketingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                Issue editingIssue = issue;
-                if (issue.Solver_Id != null)
+                if (issue.IssueStatus == Status.closed)
                 {
-                    editingIssue.IssueStatus = Status.assigned;
+                    issue.IsDone = true;
                 }
 
-                issueService.ModifyIssue(editingIssue);
+                //issueService.ModifyIssue(issue);
+                db.Entry(issue).State = EntityState.Modified;
+                db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
@@ -290,7 +305,8 @@ namespace TicketingSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Cancel(Issue orIssue, string Reply)
         {
-            Issue issue = issueService.SingleIssue(orIssue.IssueId);
+            //Issue issue = issueService.SingleIssue(orIssue.IssueId);
+            Issue issue = db.Issues.Find(orIssue.IssueId);
             ApplicationUser user = userService.GetUser(currentUserId);
             if (issue == null)
             {
@@ -299,7 +315,9 @@ namespace TicketingSystem.Controllers
             issue.IssueStatus = Status.canceled;
             issue.IsDone = true;
 
-            issueService.ModifyIssue(issue);
+            //issueService.ModifyIssue(issue);
+            db.Entry(issue).State = EntityState.Modified;
+            db.SaveChanges();
 
             IssueReply issueReply = new IssueReply();
             issueReply.Content = Reply;
@@ -309,7 +327,9 @@ namespace TicketingSystem.Controllers
             issueReply.IsRead = false;
             issueReply.Issue = issue;
 
-            issueReplyService.AddIssueReply(issueReply);
+            //issueReplyService.AddIssueReply(issueReply);
+            db.IssueReplies.Add(issueReply);
+            db.SaveChanges();
 
             return RedirectToAction("Read", new { id = issue.IssueId });
         }
