@@ -46,8 +46,10 @@ namespace TicketingSystem.Models
         public string Department { get; set; }
 
         public bool IsActive { get; set; }
+
         [Display(Name = "Manager", ResourceType = typeof(App_GlobalResources.globalUI))]
         public virtual string Manager { get; set; }
+
         [ForeignKey("Manager")]
         public virtual ApplicationUser ManagerUser { get; set; } 
 

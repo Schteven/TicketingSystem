@@ -120,6 +120,24 @@
   <data name="Cellnumber" xml:space="preserve">
     <value>GSM nummer</value>
   </data>
+  <data name="Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="ConfirmNewPassword" xml:space="preserve">
+    <value>Bevestig nieuw wachtwoord</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Bevestig wachtwoord</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Inhoud</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Creatiedatum</value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>Huidig wachtwoord</value>
+  </data>
   <data name="Department" xml:space="preserve">
     <value>Afdeling</value>
   </data>
@@ -129,16 +147,58 @@
   <data name="Firstname" xml:space="preserve">
     <value>Voornaam</value>
   </data>
+  <data name="IssueId" xml:space="preserve">
+    <value>Probleem Id</value>
+  </data>
+  <data name="IssueReplies" xml:space="preserve">
+    <value>Issue antwoorden</value>
+  </data>
+  <data name="IssueReply_Id" xml:space="preserve">
+    <value>Probleem antwoord id</value>
+  </data>
+  <data name="IssueStatus" xml:space="preserve">
+    <value>Probleem status</value>
+  </data>
   <data name="Lastname" xml:space="preserve">
     <value>Achternaam</value>
   </data>
   <data name="Manager" xml:space="preserve">
     <value>Manager</value>
   </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>Nieuw Wachtwoord</value>
+  </data>
+  <data name="NewPasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
+    <value>Het nieuwe wachtwoord en het te bevestigen wachtwoord zijn niet hetzelfde</value>
+  </data>
+  <data name="PasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
+    <value>Het wachtwoord en het te bevestigen wachtwoord zijn niet hetzelfde</value>
+  </data>
   <data name="PhoneNumber" xml:space="preserve">
     <value>Telefoon</value>
   </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Prioriteit</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Onthoud mij</value>
+  </data>
+  <data name="RememberThisBrowser" xml:space="preserve">
+    <value>Onthoud deze browser?</value>
+  </data>
+  <data name="Solver_Id" xml:space="preserve">
+    <value>Oplosser ID</value>
+  </data>
+  <data name="StringMinimumLength" xml:space="preserve">
+    <value>De minimum lengte moet minstens {2} karakters lang zijn.</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Onderwerp</value>
+  </data>
   <data name="UserName" xml:space="preserve">
     <value>Gebruikersnaam</value>
+  </data>
+  <data name="User_Id" xml:space="preserve">
+    <value>Gebruikers ID</value>
   </data>
 </root>

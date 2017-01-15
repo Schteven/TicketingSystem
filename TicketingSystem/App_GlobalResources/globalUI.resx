@@ -117,8 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Cellnumber" xml:space="preserve">
+  <data name="CellNumber" xml:space="preserve">
     <value>Mobile phone</value>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="ConfirmNewPassword" xml:space="preserve">
+    <value>Confirm new password</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>Current password</value>
   </data>
   <data name="Department" xml:space="preserve">
     <value>Department</value>
@@ -129,19 +147,61 @@
   <data name="Firstname" xml:space="preserve">
     <value>Firstname</value>
   </data>
+  <data name="IssueId" xml:space="preserve">
+    <value>Issue ID</value>
+  </data>
+  <data name="IssueReplies" xml:space="preserve">
+    <value>Issue Replies</value>
+  </data>
+  <data name="IssueReply_Id" xml:space="preserve">
+    <value>Issue Reply ID</value>
+  </data>
+  <data name="IssueStatus" xml:space="preserve">
+    <value>Issue Status</value>
+  </data>
   <data name="Lastname" xml:space="preserve">
     <value>Lastname</value>
   </data>
   <data name="Manager" xml:space="preserve">
     <value>Manager</value>
   </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="NewPasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
+    <value>The new password and confirmation password do not match.</value>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="PasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
+    <value>The password and confirmation password do not match.</value>
   </data>
   <data name="PhoneNumber" xml:space="preserve">
     <value>Work phone</value>
   </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Remember me</value>
+  </data>
+  <data name="RememberThisBrowser" xml:space="preserve">
+    <value>Remember this browser?</value>
+  </data>
+  <data name="Solver_Id" xml:space="preserve">
+    <value>Solver ID</value>
+  </data>
+  <data name="StringMinimumLength" xml:space="preserve">
+    <value>The {0} must be at least {2} characters long.</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
   <data name="UserName" xml:space="preserve">
     <value>Username</value>
+  </data>
+  <data name="User_Id" xml:space="preserve">
+    <value>User ID</value>
   </data>
 </root>

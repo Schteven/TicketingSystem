@@ -6,7 +6,7 @@ namespace TicketingSystem.Models
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "Email", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Email { get; set; }
     }
 
@@ -29,36 +29,37 @@ namespace TicketingSystem.Models
         public string Provider { get; set; }
 
         [Required]
-        [Display(Name = "Code")]
+        [Display(Name = "Code", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Code { get; set; }
         public string ReturnUrl { get; set; }
 
-        [Display(Name = "Remember this browser?")]
+        [Display(Name = "RememberThisBrowser", ResourceType = typeof(App_GlobalResources.globalUI))]
         public bool RememberBrowser { get; set; }
 
+        [Display(Name = "RememberMe", ResourceType = typeof(App_GlobalResources.globalUI))]
         public bool RememberMe { get; set; }
     }
 
     public class ForgotViewModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "Email", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Email { get; set; }
     }
 
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Username")]
+        [Display(Name = "Email", ResourceType = typeof(App_GlobalResources.globalUI))]
         //[EmailAddress]
         public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Password", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
+        [Display(Name = "RememberMe", ResourceType = typeof(App_GlobalResources.globalUI))]
         public bool RememberMe { get; set; }
     }
 
@@ -66,18 +67,18 @@ namespace TicketingSystem.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "Email", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Email { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 4)]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Password", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "ConfirmPassword", ResourceType = typeof(App_GlobalResources.globalUI))]
+        [Compare("Password", ErrorMessageResourceName = "PasswordAndConfirmationPasswordDoNotMatch", ErrorMessageResourceType = typeof(App_GlobalResources.globalUI))]
         public string ConfirmPassword { get; set; }
     }
 
@@ -85,20 +86,21 @@ namespace TicketingSystem.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "Email", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessageResourceName = "StringMinimumLength", ErrorMessageResourceType = typeof(App_GlobalResources.globalUI), MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Password", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "ConfirmPassword", ResourceType = typeof(App_GlobalResources.globalUI))]
+        [Compare("Password", ErrorMessageResourceName = "PasswordAndConfirmationPasswordDoNotMatch", ErrorMessageResourceType = typeof(App_GlobalResources.globalUI))]
         public string ConfirmPassword { get; set; }
 
+        [Display(Name = "Code", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Code { get; set; }
     }
 
@@ -106,7 +108,7 @@ namespace TicketingSystem.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "Email", ResourceType = typeof(App_GlobalResources.globalUI))]
         public string Email { get; set; }
     }
 }
