@@ -226,7 +226,7 @@
     <Compile Include="Services\IIssueService.cs" />
     <Compile Include="Services\IUserService.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Models\UsersController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
