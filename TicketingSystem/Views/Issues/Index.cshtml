@@ -24,6 +24,12 @@
     <tbody>
 @foreach (var item in Model)
 {
+    string Content = item.Content;
+    int ContentLength = Content.Length;
+    if (ContentLength > 100)
+    {
+        Content = Content.Substring(0, 100) + " ... ";
+    }
     string htmlclass = string.Empty;
     switch (item.Priority)
     {
@@ -42,7 +48,7 @@
         <tr @Html.Raw(htmlclass);>
             <th scope="row">@Html.DisplayFor(modelItem => item.User.Firstname)</th>
             <td>@Html.DisplayFor(modelItem => item.Subject)</td>
-            <td>@Html.DisplayFor(modelItem => item.Content)</td>
+            <td>@Html.Raw(Content)</td>
             <td>@Html.DisplayFor(modelItem => item.Priority)</td>
             <td>@Html.DisplayFor(modelItem => item.IssueStatus)</td>
             <td>@Html.ActionLink("Read", "Read", new { id = item.IssueId })</td>

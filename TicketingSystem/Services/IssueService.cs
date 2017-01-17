@@ -21,7 +21,7 @@ namespace TicketingSystem.Models
 
         public List<Issue> AllToDispatcher()
         {
-            var issues = base.GetAll().Where(i => i.IsDone == false).OrderByDescending(i => i.Priority).ThenBy(i => i.Created);
+            var issues = base.GetAll().Where(i => i.IsDone == false).OrderByDescending(i => i.IssueStatus == Status.@new).ThenByDescending(i => i.Priority).ThenBy(i => i.Created);
             return issues.ToList();
         }
 
