@@ -44,6 +44,7 @@ namespace TicketingSystem.Controllers
         // GET: Issues
         public async System.Threading.Tasks.Task<ActionResult> Index()
         {
+            ModelState.Clear();
             ICollection<Issue> issues = null;
             ICollection<Issue> closedIssues = null;
 
@@ -83,7 +84,7 @@ namespace TicketingSystem.Controllers
         // GET: Issues/Read/5
         public async System.Threading.Tasks.Task<ActionResult> Read(int? id)
         {
-
+            ModelState.Clear();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -152,6 +153,7 @@ namespace TicketingSystem.Controllers
         [ValidateAntiForgeryToken]
         public async System.Threading.Tasks.Task<ActionResult> Read(Issue orIssue, string Reply, bool Solved)
         {
+            ModelState.Clear();
             string userRole = await userService.GetUserRole();
 
             Issue issue = issueService.SingleIssue(orIssue.IssueId);
@@ -235,6 +237,7 @@ namespace TicketingSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "IssueId,Subject,Content,Priority")] Issue issue)
         {
+            ModelState.Clear();
             if (ModelState.IsValid)
             {
                 ApplicationUser dispatcher = userService.GetUsersByRole("Dispatcher").FirstOrDefault();
@@ -253,6 +256,7 @@ namespace TicketingSystem.Controllers
         // GET: Issues/EditSolver
         public ActionResult EditSolver(int? id, string solver)
         {
+            ModelState.Clear();
             Issue issue = db.Issues.Find(id);
             issue.Solver_Id = solver;
 
@@ -264,6 +268,7 @@ namespace TicketingSystem.Controllers
         // GET: Issues/Edit/5
         public ActionResult Edit(int? id)
         {
+            ModelState.Clear();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -284,6 +289,7 @@ namespace TicketingSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "IssueId,Subject,Content,Priority,IssueStatus,Created,User_Id,Solver_Id")] Issue issue)
         {
+            ModelState.Clear();
             if (ModelState.IsValid)
             {
                 if (issue.IssueStatus == Status.closed)
@@ -305,6 +311,7 @@ namespace TicketingSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Cancel(Issue orIssue, string Reply)
         {
+            ModelState.Clear();
             //Issue issue = issueService.SingleIssue(orIssue.IssueId);
             Issue issue = db.Issues.Find(orIssue.IssueId);
             ApplicationUser user = userService.GetUser(currentUserId);

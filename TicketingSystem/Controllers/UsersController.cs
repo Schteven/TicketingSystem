@@ -178,7 +178,7 @@ namespace TicketingSystem.Views
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
         {
-            ApplicationUser applicationUser = userService.GetUser(id);
+            ApplicationUser applicationUser = db.Users.Find(id);
             db.Users.Remove(applicationUser);
             db.SaveChanges();
             return RedirectToAction("Index");
