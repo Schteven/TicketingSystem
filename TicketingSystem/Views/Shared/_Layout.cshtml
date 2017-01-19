@@ -6,6 +6,7 @@
     <title>@ViewBag.Title - Ticketingsystem</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/Content/Custom.css")
 
 </head>
 <body>
@@ -21,8 +22,8 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Tickets", "Index", "Issues")</li>
-                    <li>@Html.ActionLink("Users", "Index", "Users")</li>
+                    <li>@Html.ActionLink(@globalUI.Tickets, "Index", "Issues")</li>
+                    <li>@Html.ActionLink(@globalUI.Users, "Index", "Users")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

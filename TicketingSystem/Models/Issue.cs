@@ -12,21 +12,33 @@ namespace TicketingSystem.Models
 {
     public enum Level
     {
+        [Display(Name = "low", ResourceType = typeof(App_GlobalResources.globalUI))]
         low,
+        [Display(Name = "medium", ResourceType = typeof(App_GlobalResources.globalUI))]
         medium,
+        [Display(Name = "high", ResourceType = typeof(App_GlobalResources.globalUI))]
         high,
+        [Display(Name = "immediate", ResourceType = typeof(App_GlobalResources.globalUI))]
         immediate
     }
 
     public enum Status
     {
+        [Display(Name = "newstatusissue", ResourceType = typeof(App_GlobalResources.globalUI))]
         @new,
+        [Display(Name = "assigned", ResourceType = typeof(App_GlobalResources.globalUI))]
         assigned,
+        [Display(Name = "open", ResourceType = typeof(App_GlobalResources.globalUI))]
         open,
+        [Display(Name = "waiting", ResourceType = typeof(App_GlobalResources.globalUI))]
         waiting,
+        [Display(Name = "solved", ResourceType = typeof(App_GlobalResources.globalUI))]
         solved,
+        [Display(Name = "closed", ResourceType = typeof(App_GlobalResources.globalUI))]
         closed,
+        [Display(Name = "canceled", ResourceType = typeof(App_GlobalResources.globalUI))]
         canceled,
+        [Display(Name = "denied", ResourceType = typeof(App_GlobalResources.globalUI))]
         denied
     }
 

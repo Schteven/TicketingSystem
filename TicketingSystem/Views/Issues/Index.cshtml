@@ -7,7 +7,7 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink(globalUI.CreateNew, "Create")
     @ViewBag.Test
 </p>
 <table class="table table-hover">
@@ -45,13 +45,13 @@
             <td>@Html.DisplayFor(modelItem => item.Content)</td>
             <td>@Html.DisplayFor(modelItem => item.Priority)</td>
             <td>@Html.DisplayFor(modelItem => item.IssueStatus)</td>
-            <td>@Html.ActionLink("Read", "Read", new { id = item.IssueId })</td>
+            <td>@Html.ActionLink(@globalUI.Read, "Read", new { id = item.IssueId })</td>
         </tr>
 }
     </tbody>
 </table>
 <hr />
-<h3>Closed tickets:</h3>
+<h3>@globalUI.ClosedTickets:</h3>
 <table class="table table-hover">
     <thead>
         <tr>
@@ -74,7 +74,7 @@
                     <td>@Html.DisplayFor(modelItem => i.Content)</td>
                     <td>@Html.DisplayFor(modelItem => i.Priority)</td>
                     <td>@Html.DisplayFor(modelItem => i.IssueStatus)</td>
-                    <td>@Html.ActionLink("Read", "Read", new { id = i.IssueId })</td>
+                    <td>@Html.ActionLink(globalUI.Read, "Read", new { id = i.IssueId })</td>
                 </tr>
                 }
             }

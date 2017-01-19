@@ -117,8 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="assigned" xml:space="preserve">
+    <value>toegewezen</value>
+  </data>
+  <data name="cancelled" xml:space="preserve">
+    <value>geannuleerd</value>
+  </data>
   <data name="Cellnumber" xml:space="preserve">
     <value>GSM nummer</value>
+  </data>
+  <data name="closed" xml:space="preserve">
+    <value>gesloten</value>
+  </data>
+  <data name="ClosedTickets" xml:space="preserve">
+    <value>Afgesloten tickets</value>
   </data>
   <data name="Code" xml:space="preserve">
     <value>Code</value>
@@ -135,8 +147,14 @@
   <data name="Created" xml:space="preserve">
     <value>Creatiedatum</value>
   </data>
+  <data name="CreateNew" xml:space="preserve">
+    <value>Nieuwe maken</value>
+  </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>Huidig wachtwoord</value>
+  </data>
+  <data name="denied" xml:space="preserve">
+    <value>geweigerd</value>
   </data>
   <data name="Department" xml:space="preserve">
     <value>Afdeling</value>
@@ -146,6 +164,15 @@
   </data>
   <data name="Firstname" xml:space="preserve">
     <value>Voornaam</value>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hallo</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>Hoog</value>
+  </data>
+  <data name="immediate" xml:space="preserve">
+    <value>Onmiddellijk</value>
   </data>
   <data name="IssueId" xml:space="preserve">
     <value>Probleem Id</value>
@@ -162,14 +189,35 @@
   <data name="Lastname" xml:space="preserve">
     <value>Achternaam</value>
   </data>
+  <data name="LogIn" xml:space="preserve">
+    <value>Aanmelden</value>
+  </data>
+  <data name="LogInQuestion" xml:space="preserve">
+    <value>Gelieve je aan te melden</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Laag</value>
+  </data>
   <data name="Manager" xml:space="preserve">
     <value>Manager</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Medium</value>
   </data>
   <data name="NewPassword" xml:space="preserve">
     <value>Nieuw Wachtwoord</value>
   </data>
   <data name="NewPasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>Het nieuwe wachtwoord en het te bevestigen wachtwoord zijn niet hetzelfde</value>
+  </data>
+  <data name="newstatusissue" xml:space="preserve">
+    <value>nieuw</value>
+  </data>
+  <data name="open" xml:space="preserve">
+    <value>open</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Wachtwoord</value>
   </data>
   <data name="PasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>Het wachtwoord en het te bevestigen wachtwoord zijn niet hetzelfde</value>
@@ -180,11 +228,17 @@
   <data name="Priority" xml:space="preserve">
     <value>Prioriteit</value>
   </data>
+  <data name="Read" xml:space="preserve">
+    <value>Lees</value>
+  </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Onthoud mij</value>
   </data>
   <data name="RememberThisBrowser" xml:space="preserve">
     <value>Onthoud deze browser?</value>
+  </data>
+  <data name="solved" xml:space="preserve">
+    <value>opgelost</value>
   </data>
   <data name="Solver_Id" xml:space="preserve">
     <value>Oplosser ID</value>
@@ -195,10 +249,22 @@
   <data name="Subject" xml:space="preserve">
     <value>Onderwerp</value>
   </data>
+  <data name="Tickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="UseLocalAccount" xml:space="preserve">
+    <value>Gebruik een locaal account om in te loggen.</value>
+  </data>
   <data name="UserName" xml:space="preserve">
     <value>Gebruikersnaam</value>
   </data>
+  <data name="Users" xml:space="preserve">
+    <value>Gebruikers</value>
+  </data>
   <data name="User_Id" xml:space="preserve">
     <value>Gebruikers ID</value>
+  </data>
+  <data name="waiting" xml:space="preserve">
+    <value>wachtende</value>
   </data>
 </root>
