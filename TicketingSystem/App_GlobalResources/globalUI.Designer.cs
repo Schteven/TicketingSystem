@@ -63,9 +63,9 @@ namespace TicketingSystem.App_GlobalResources {
         /// <summary>
         ///   Looks up a localized string similar to Mobile phone.
         /// </summary>
-        public static string CellNumber {
+        public static string Cellnumber {
             get {
-                return ResourceManager.GetString("CellNumber", resourceCulture);
+                return ResourceManager.GetString("Cellnumber", resourceCulture);
             }
         }
         
